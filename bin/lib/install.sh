@@ -1,4 +1,11 @@
 
+# old="export PREFIX= /usr/local"
+# new="export PREFIX= $lua_path"
+# sed -i  "s|$old|$new|" Makefile
+# make PREFIX="$lua_path"
+# make install PREFIX="$lua_path"
+# git checkout Makefile
+
 # === {{CMD}}
 # === {{CMD}}  $PWD/my-dir
 install () {
@@ -21,5 +28,6 @@ install () {
   make         PREFIX="$PREFIX"
   make install PREFIX="$PREFIX"
 
-  $0 install-luarocks "$PREFIX"
+  $0 install-luarocks  "$PREFIX"
+  $0 install-openresty "$PREFIX"
 } # === end function
