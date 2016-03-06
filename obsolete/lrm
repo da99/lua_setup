@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# -*- bash -*-
+#
+#
+#
+if [[ ! -z "$IS_DEV" ]]
+then
+  echo "This is a dev machine... exiting."
+  exit 0
+fi
+
+target="$1"
+set -u -e -o pipefail
+
+if [[ ! -z "$target" ]]
+then
+  cd "$target"
+fi
+
+if [[ ! -d lrm ]]
+then
+  git clone https://github.com/da99/lrm.git
+  cd lrm
+else
+  cd lrm
+  git pull
+fi
+
+echo -e "\n ==== LRM is installed to $(pwd)\n"
+

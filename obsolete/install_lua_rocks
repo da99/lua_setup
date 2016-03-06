@@ -1,0 +1,20 @@
+#!/usr/bin/env bash
+# -*- bash -*-
+#
+#!/usr/bin/env node
+# -*- js   -*-
+#
+#!/usr/bin/env lua
+# -*- js   -*-
+#
+set -u -e -o pipefail -x
+
+
+my_luarocks install moonrocks
+my_luarocks install dkjson
+my_luarocks install penlight
+my_luarocks install underscore
+
+
+
+

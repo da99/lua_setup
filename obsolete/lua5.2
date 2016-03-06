@@ -1,0 +1,32 @@
+#!/usr/bin/env bash
+# -*- bash -*-
+#
+#  Change to the dir you want to install:
+#    cd /my_home/lua5.2
+#    run this script there
+#
+#
+set -u -e -o pipefail
+
+install_bin=$(dirname $0)
+bin=$(dirname $install_bin)
+
+dir=$(pwd)
+base=lua-5.2.2
+
+if [[ ! -d $base ]]
+then
+  rm -f $base.taz.gz
+  curl -fSO http://www.lua.org/ftp/$base.tar.gz
+  $bin/util/untar $base.tar.gz > /dev/null
+fi
+
+cd $base
+# sed -i "s!/usr/local!$dir!ig" Makefile
+# for f in src/*.h
+# do
+  # sed -i "s!/usr/local!$dir!ig" $f
+# done
+make linux
+make install INSTALL_TOP=$dir
+
