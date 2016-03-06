@@ -3,14 +3,17 @@
 # === PREFIX is required, unlike "lua_setup install"
 # === For now: The PREFIX should be the same as the luajit install.
 install-luarocks () {
-  local PREFIX="$1"
+  # NOTE: I export PREFIX and LUA_DIR just in case luarocks uses
+  # them in place of the "--prefix" option
+  export PREFIX="$@"
+  export LUA_DIR="$PREFIX"
+
   git_setup clone_or_pull https://github.com/keplerproject/luarocks.git
   cd /progs/luarocks
   git_setup checkout-latest
 
-  export LUA_DIR="$PREFIX"
   local NAME="luajit-$($PREFIX/bin/luajit -v | grep -Po '^LuaJIT \K(\d+\.\d+)(?=\.\d)')"
-  set -x
+
   ./configure               \
   --prefix="$PREFIX"         \
   --with-lua="$PREFIX"        \
@@ -19,6 +22,6 @@ install-luarocks () {
   --sysconfdir="$PREFIX"         \
   --force-config
 
-  make
+  make build
   make install
 } # === end function
