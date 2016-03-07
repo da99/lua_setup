@@ -12,6 +12,7 @@ install-openresty () {
 	fi
 
   cd openresty-${LATEST}
+  make clean
 
   export PREFIX="$@"
     # --with-http_postgres_module   \
