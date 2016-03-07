@@ -1,7 +1,7 @@
 
 # === {{CMD}} PREFIX
 install-openresty () {
-  git_setup clone_or_pull https://github.com/openresty/openresty
+  git_setup clone-or-pull https://github.com/openresty/openresty
   cd /progs/openresty
   LATEST="$(git_setup latest | cut -d'v' -f2-)"
 

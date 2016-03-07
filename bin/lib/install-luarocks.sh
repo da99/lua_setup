@@ -8,7 +8,7 @@ install-luarocks () {
   export PREFIX="$@"
   export LUA_DIR="$PREFIX"
 
-  git_setup clone_or_pull https://github.com/keplerproject/luarocks.git
+  git_setup clone-or-pull https://github.com/keplerproject/luarocks.git
   cd /progs/luarocks
   git_setup checkout-latest
 

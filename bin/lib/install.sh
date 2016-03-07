@@ -20,7 +20,7 @@ install () {
   fi
   LUA_DIR="$PREFIX"
 
-  git_setup clone_or_pull "http://luajit.org/git/luajit-2.0.git"
+  git_setup clone-or-pull "http://luajit.org/git/luajit-2.0.git"
   cd /progs/luajit-2.0
   git_setup checkout-latest
 
@@ -29,5 +29,10 @@ install () {
   make install PREFIX="$PREFIX"
 
   $0 install-luarocks  "$PREFIX"
+  $PREFIX/bin/luarocks || {
+    stat=$?;
+    bash_setup RED "=== Tip: remove the luajit dir and start over";
+    exit $stat;
+  }
   $0 install-openresty "$PREFIX"
 } # === end function
