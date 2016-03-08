@@ -8,6 +8,7 @@
 
 # === {{CMD}}
 # === {{CMD}}  $PWD/my-dir
+# === Installs: luajit, luarocks, openresty
 install () {
   # NOTE: I export PREFIX and LUA_DIR just in case
   # luajit uses them in place of the "--prefix" option
