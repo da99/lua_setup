@@ -1,18 +1,29 @@
 
 # === {{CMD}} PREFIX
-install-openresty () {
-  git_setup clone-or-pull https://github.com/openresty/openresty
-  cd /progs/openresty
-  LATEST="$(git_setup latest | cut -d'v' -f2-)"
+latest-openresty-archive () {
+  curl -s "https://openresty.org/" | \
+    grep -Pzo "(?s)Lastest release.+?\Kopenresty-[\d\.]+\.tar\.gz" || \
+    { bash_setup RED "!!! Failed to get {{latest openresty}} version."; exit 1; }
+}
 
+install-openresty () {
+  if [[ -z "$@" ]]; then
+    bash_setup RED "!!! No {{PREFIX}} specified."
+    exit 1
+  fi
+
+  LATEST="$(latest-openresty-archive)"
+
+  bash_setup BOLD "=== Downloading {{$LATEST}}... "
 	cd /tmp
-  if [[ ! -d openresty-${LATEST} ]]; then
-		wget https://openresty.org/download/openresty-${LATEST}.tar.gz
-		tar -xvf openresty-${LATEST}.tar.gz
+  if [[ ! -d ${LATEST} ]]; then
+    if [[ ! -s $LATEST ]]; then
+      wget https://openresty.org/download/${LATEST}
+    fi
+		tar -xvf ${LATEST} || { rm $LATEST; install-openresty "$PREFIX"; exit 0; }
 	fi
 
-  cd openresty-${LATEST}
-  make clean
+  cd $(basename ${LATEST} .tar.gz )
 
   export PREFIX="$@"
     # --with-http_postgres_module   \

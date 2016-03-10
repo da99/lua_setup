@@ -21,6 +21,7 @@ install () {
   fi
   LUA_DIR="$PREFIX"
 
+  bash_setup BOLD "=== Installing to: {{$PREFIX}}"
   git_setup clone-or-pull "http://luajit.org/git/luajit-2.0.git"
   cd /progs/luajit-2.0
   git_setup checkout-latest
@@ -36,4 +37,7 @@ install () {
     exit $stat;
   }
   $0 install-openresty "$PREFIX"
+
 } # === end function
+
+
