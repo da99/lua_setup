@@ -6,7 +6,7 @@
 # make install PREFIX="$lua_path"
 # git checkout Makefile
 
-# === {{CMD}}
+# === {{CMD}}              # defaults to $PWD/progs
 # === {{CMD}}  $PWD/my-dir
 # === Installs: luajit, luarocks, openresty
 install () {
@@ -15,7 +15,8 @@ install () {
   export PREFIX
   export LUA_DIR
   if [[ -z "$@" ]]; then
-    PREFIX="$PWD/luajit"
+    PREFIX="$PWD/progs"
+    mkdir -p "$PREFIX"
   else
     PREFIX="$@"
   fi
