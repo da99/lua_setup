@@ -1,10 +1,4 @@
 
-# old="export PREFIX= /usr/local"
-# new="export PREFIX= $lua_path"
-# sed -i  "s|$old|$new|" Makefile
-# make PREFIX="$lua_path"
-# make install PREFIX="$lua_path"
-# git checkout Makefile
 
 # === {{CMD}}              # defaults to $PWD/progs
 # === {{CMD}}  $PWD/my-dir
