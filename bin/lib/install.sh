@@ -21,6 +21,7 @@ install () {
   cd /progs/luajit-2.0
   git_setup checkout-latest
 
+  bash_setup BOLD "=== Installing {{LuaJIT}}"
   mkdir -p "$PREFIX"
   make         PREFIX="$PREFIX"
   make install PREFIX="$PREFIX"

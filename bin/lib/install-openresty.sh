@@ -1,19 +1,30 @@
 
 # === {{CMD}} PREFIX
 latest-openresty-archive () {
-  local VER="$(git ls-remote -t https://github.com/openresty/openresty | cut -d'/' -f 3 | sort -r | grep -P '^v[0-9\.]+$' | head -n 1 | cut -d'v' -f1)"
-  echo "openresty-${VER}tar.gz"
+  local VER="$(git ls-remote -t https://github.com/openresty/openresty | cut -d'/' -f 3 | sort -r | grep -P '^v[0-9\.]+$' | head -n 1 | cut -d'v' -f2)"
+  if [[ -z "$VER" ]]; then
+    bash_setup RED "=== Latest OpenResty version {{not found}}."
+    exit 1
+  fi
+  echo "openresty-${VER}.tar.gz"
   return 0
 }
 
 install-openresty () {
+  bash_setup BOLD "=== Installing {{OpenResty}}"
+  export PREFIX="$@"
   local PREFIX_URL="https://openresty.org/download"
   if [[ -z "$@" ]]; then
-    bash_setup RED "!!! No {{PREFIX}} specified."
-    exit 1
+    PREFIX="$PWD/progs"
   fi
 
+  PREFIX="$(realpath -m "$PREFIX")"
+  bash_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
+
   local LATEST="$(latest-openresty-archive)"
+  if [[ -z "$LATEST" ]]; then
+    exit 1
+  fi
 
   bash_setup BOLD "=== Downloading {{$LATEST}}... "
 
@@ -30,13 +41,15 @@ install-openresty () {
 
   cd $(basename ${LATEST} .tar.gz )
 
-  export PREFIX="$@"
-    # --with-http_postgres_module   \
+  local PROCS="$(grep -c '^processor' /proc/cpuinfo)"
+  # --with-http_postgres_module   \
+
   ./configure                  \
     --prefix="$PREFIX"          \
+    --error-log-path="$PREFIX/startup.error.log" \
     --without-http_redis2_module \
     --with-pcre-jit --with-ipv6   \
-    -j2
+    -j$(($PROCS - 1))
   make
   make install
 
