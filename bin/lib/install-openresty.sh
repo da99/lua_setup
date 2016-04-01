@@ -1,5 +1,5 @@
 
-# === {{CMD}} PREFIX
+# === {{CMD}}
 latest-openresty-archive () {
   local VER="$(git ls-remote -t https://github.com/openresty/openresty | cut -d'/' -f 3 | sort -r | grep -P '^v[0-9\.]+$' | head -n 1 | cut -d'v' -f2)"
   if [[ -z "$VER" ]]; then
@@ -11,27 +11,23 @@ latest-openresty-archive () {
 }
 
 install-openresty () {
-  bash_setup BOLD "=== Installing {{OpenResty}}"
-  export PREFIX="$@"
-  local PREFIX_URL="https://openresty.org/download"
-  if [[ -z "$@" ]]; then
-    PREFIX="$PWD/progs"
-  fi
-
-  export LOG_PREFIX="$PWD/tmp"
+  mksh_setup BOLD "=== Installing {{OpenResty}}"
+  export PREFIX="$(readlink -m "$PWD/progs")"
+  export LOG_PREFIX="$(readlink -m "$PWD/tmp")"
   mkdir -p "$LOG_PREFIX"
 
-  PREFIX="$(realpath -m "$PREFIX")"
-  bash_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
+  local +x PREFIX_URL="https://openresty.org/download"
 
-  local LATEST="$(latest-openresty-archive)"
+  mksh_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
+
+  local +x LATEST="$(latest-openresty-archive)"
   if [[ -z "$LATEST" ]]; then
     exit 1
   fi
 
-  bash_setup BOLD "=== Downloading {{$LATEST}}... "
+  mksh_setup BOLD "=== Downloading {{$LATEST}}... "
 
-  local TMP="$THIS_DIR/tmp"
+  local +x TMP="$THIS_DIR/tmp"
   mkdir -p "$TMP"
 
 	cd "$TMP"

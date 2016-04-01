@@ -1,18 +1,16 @@
 
-# === {{CMD}} $PWD/my-dir
-# === PREFIX is required, unlike "lua_setup install"
-# === For now: The PREFIX should be the same as the luajit install.
+# === {{CMD}}  # === install to $PWD/progs
 install-luarocks () {
   # NOTE: I export PREFIX and LUA_DIR just in case luarocks uses
   # them in place of the "--prefix" option
-  export PREFIX="$@"
+  export PREFIX="$(readlink -m "$PWD/progs")"
   export LUA_DIR="$PREFIX"
 
   git_setup clone-or-pull https://github.com/keplerproject/luarocks.git
   cd /progs/luarocks
   git_setup checkout-latest
 
-  local NAME="luajit-$($PREFIX/bin/luajit -v | grep -Po '^LuaJIT \K(\d+\.\d+)(?=\.\d)')"
+  local +x NAME="luajit-$($PREFIX/bin/luajit -v | grep -Po '^LuaJIT \K(\d+\.\d+)(?=\.\d)')"
 
   ./configure               \
   --prefix="$PREFIX"         \
