@@ -18,6 +18,9 @@ install-openresty () {
     PREFIX="$PWD/progs"
   fi
 
+  export LOG_PREFIX="$PWD/tmp"
+  mkdir -p "$LOG_PREFIX"
+
   PREFIX="$(realpath -m "$PREFIX")"
   bash_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
 
@@ -46,7 +49,8 @@ install-openresty () {
 
   ./configure                  \
     --prefix="$PREFIX"          \
-    --error-log-path="$PREFIX/startup.error.log" \
+    --error-log-path="$LOG_PREFIX/startup.error.log" \
+    --http-log-path="$LOG_PREFIX/startup.access.log"  \
     --without-http_redis2_module \
     --with-pcre-jit --with-ipv6   \
     -j$(($PROCS - 1))
