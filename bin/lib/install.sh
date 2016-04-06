@@ -21,6 +21,7 @@ install () {
   make         PREFIX="$PREFIX"
   make install PREFIX="$PREFIX"
 
+  cd "$PREFIX"
   install-luarocks
   $PREFIX/bin/luarocks || {
     stat=$?;
