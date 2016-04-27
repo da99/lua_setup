@@ -21,6 +21,7 @@ install-openresty () {
   mksh_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
 
   local +x LATEST="$(latest-openresty-archive)"
+  local +x LATEST_DIR=$(basename "$LATEST" ".tar.gz")
   if [[ -z "$LATEST" ]]; then
     exit 1
   fi
@@ -31,24 +32,27 @@ install-openresty () {
   mkdir -p "$TMP"
 
 	cd "$TMP"
-  if [[ ! -d ${LATEST} ]]; then
+
+  if [[ ! -d ${LATEST_DIR} ]]; then
     if [[ ! -s $LATEST ]]; then
       wget $PREFIX_URL/${LATEST}
     fi
 		tar -xvf ${LATEST} || { rm $LATEST; install-openresty "$PREFIX"; exit 0; }
 	fi
 
-  cd $(basename ${LATEST} .tar.gz )
+  cd $LATEST_DIR
 
   local PROCS="$(grep -c '^processor' /proc/cpuinfo)"
-  # --with-http_postgres_module   \
 
   ./configure                  \
     --prefix="$PREFIX"          \
+    --with-luajit                \
+    --with-http_iconv_module      \
+    --without-http_redis2_module   \
+    --with-pcre-jit                 \
+    --with-ipv6                      \
     --error-log-path="$LOG_PREFIX/startup.error.log" \
     --http-log-path="$LOG_PREFIX/startup.access.log"  \
-    --without-http_redis2_module \
-    --with-pcre-jit --with-ipv6   \
     -j$(($PROCS - 1))
   make
   make install
