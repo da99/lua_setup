@@ -15,6 +15,14 @@ install-puc () {
   local PARTIAL=$(wget -q -O- $URL/download.html | grep -iPzo 'HREF="\K(.+?)(?=">source<)')
   local NAME=$(basename $PARTIAL .tar.gz)
 
+  if [[ -f "$PREFIX/bin/lua" ]]; then
+    local +x CURRENT="$($0 get-version "$PREFIX/bin")"
+    if [[ "$NAME" == "lua-$CURRENT" ]]; then
+      mksh_setup ORANGE "=== Already {{installed}}: $CURRENT" >&2
+      return 0
+    fi
+  fi
+
   local TMP="$THIS_DIR/tmp"
   local ARCHIVE="$TMP/${NAME}.tar.gz"
   local SOURCE="$TMP/$NAME"
@@ -34,8 +42,7 @@ install-puc () {
   cd "$NAME"
   make linux test
 
-  mkdir -p $PREFIX/bin
-  cp $TMP/$NAME/src/lua $TMP/$NAME/src/luac $TMP/$NAME/src/liblua.a $PREFIX/bin/
+  make install INSTALL_TOP="$PREFIX"
 
   set -x
   $PREFIX/bin/lua -v
