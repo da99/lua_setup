@@ -5,19 +5,19 @@ latest-ver () {
   git ls-remote -t https://github.com/openresty/openresty | cut -d'/' -f 3 | sort -r | grep -P '^v[0-9\.]+$' | head -n 1 | cut -d'v' -f2
 }
 
+current-ver () {
+  $PREFIX/nginx/sbin/nginx -v 2>&1 | cut -d'/' -f2 || :
+} # current-ver ()
+
 latest-openresty-archive () {
   local VER="$1"; shift
   if [[ -z "$VER" ]]; then
     bash_setup RED "=== Latest OpenResty version {{not found}}."
     exit 1
   fi
-  echo "openresty-${VER}.tar.gz"
+  echo ""
   return 0
 }
-
-current-ver () {
-  $PREFIX/nginx/sbin/nginx -v 2>&1 | cut -d'/' -f2 || :
-} # current-ver ()
 
 upgrade-openresty () {
   mksh_setup BOLD "=== Installing {{OpenResty}}"
@@ -36,18 +36,18 @@ upgrade-openresty () {
 
   local +x CURRENT_VER=$(current-ver)
   local +x LATEST_VER=$(latest-ver)
+  if [[ -z "$LATEST_VER" ]]; then
+    exit 1
+  fi
+
   if [[ "$CURRENT_VER" == "$LATEST_VER" ]]; then
     mksh_setup ORANGE "=== Already {{installed}}: BOLD{{$CURRENT_VER}} in {{$PREFIX}}" >&2
     exit 0
   fi
 
-  local +x LATEST="$(latest-openresty-archive $LATEST_VER)"
-  local +x LATEST_DIR=$(basename "$LATEST" ".tar.gz")
-  if [[ -z "$LATEST" ]]; then
-    exit 1
-  fi
-
-  mksh_setup BOLD "=== Downloading {{$LATEST}}... "
+  local +x LATEST_ARCHIVE="openresty-${LATEST_VER}.tar.gz"
+  local +x LATEST_DIR=$(basename "$LATEST_ARCHIVE" ".tar.gz")
+  mksh_setup BOLD "=== Downloading {{$LATEST_ARCHIVE}}... "
 
   local +x TMP="$THIS_DIR/tmp"
   mkdir -p "$TMP"
@@ -55,15 +55,15 @@ upgrade-openresty () {
 	cd "$TMP"
 
   if [[ ! -d ${LATEST_DIR} ]]; then
-    if [[ ! -s $LATEST ]]; then
-      wget $PREFIX_URL/${LATEST}
+    if [[ ! -s $LATEST_ARCHIVE ]]; then
+      wget $PREFIX_URL/${LATEST_ARCHIVE}
     fi
-		tar -xvf ${LATEST} || { rm $LATEST; upgrade-openresty "$PREFIX"; exit 0; }
+		tar -xvf ${LATEST_ARCHIVE} || { rm $LATEST_ARCHIVE; upgrade-openresty "$PREFIX"; exit 0; }
 	fi
 
   cd $LATEST_DIR
 
-  local PROCS="$(grep -c '^processor' /proc/cpuinfo)"
+  local +x PROCS="$(grep -c '^processor' /proc/cpuinfo)"
 
   ./configure                      \
     --prefix="$PREFIX"             \
