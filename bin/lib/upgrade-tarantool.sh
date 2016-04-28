@@ -1,6 +1,6 @@
 
 # === {{CMD}} ...
-install-tarantool () {
+upgrade-tarantool () {
   local SRC="$THIS_DIR/tmp/tarantool"
 
   export PREFIX

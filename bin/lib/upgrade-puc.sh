@@ -1,7 +1,7 @@
 
 # === {{CMD}}
 # === {{CMD}}  PREFIX
-install-puc () {
+upgrade-puc () {
   export PREFIX
 
   if [[ -z "$@" ]]; then

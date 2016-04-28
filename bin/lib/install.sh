@@ -1,35 +1,35 @@
 
-source "$THIS_DIR/bin/lib/install-luarocks.sh"
-source "$THIS_DIR/bin/lib/install-openresty.sh"
 
-# === {{CMD}}              # defaults to $PWD/progs
-# === Installs: luajit, luarocks, openresty
+# === {{CMD}}  # defaults to: {{CMD}}  openresty  luarocks
+# === {{CMD}}  PREFIX
+# === {{CMD}}          openresty  luajit   tarantool  luarocks
+# === {{CMD}}  PREFIX  puc openresty  luajit   tarantool  luarocks
+# === The PREFIX is set to `$PWD/progs` unless already set.
 install () {
   # NOTE: I export PREFIX and LUA_DIR just in case
   # luajit uses them in place of the "--prefix" option
-  export PREFIX="$(readlink -m "$PWD/progs")"
-  mkdir -p "$PREFIX"
-  export LUA_DIR="$PREFIX"
+  local +x DEFAULT_PREFIX="$(readlink -m "$PWD/progs")"
+  export PREFIX="${PREFIX:-$DEFAULT_PREFIX}"
+  if [[ ! -z "$@" &&  -d "$1" ]]; then
+    export PREFIX="$1"; shift
+  fi
 
-  bash_setup BOLD "=== Installing to: {{$PREFIX}}"
-  git_setup clone-or-pull "http://luajit.org/git/luajit-2.0.git"
-  cd /progs/luajit-2.0
-  git_setup checkout-latest
+  if [[ -z "$@" ]]; then
+    $0 install openresty  luarocks
+  else
+    for NAME in $@ ; do
+      local +x FILE="$THIS_DIR/bin/lib/upgrade-$NAME.sh"
+      if [[ ! -f "$FILE" ]]; then
+        mksh_setup RED "!!! Invalid name: {{$NAME}}"
+        exit 0
+      fi
+      source $FILE
+    done
 
-  bash_setup BOLD "=== Installing {{LuaJIT}}"
-  mkdir -p "$PREFIX"
-  make         PREFIX="$PREFIX"
-  make install PREFIX="$PREFIX"
-
-  cd "$PREFIX"
-  install-luarocks
-  $PREFIX/bin/luarocks || {
-    stat=$?;
-    bash_setup RED "=== Tip: remove the luajit dir and start over";
-    exit $stat;
-  }
-
-  install-openresty
+    for NAME in $@ ; do
+      upgrade-$NAME "$PREFIX"
+    done
+  fi
 
 } # === end function
 

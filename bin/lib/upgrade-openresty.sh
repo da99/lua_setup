@@ -1,7 +1,12 @@
 
 # === {{CMD}}
+
+latest-ver () {
+  git ls-remote -t https://github.com/openresty/openresty | cut -d'/' -f 3 | sort -r | grep -P '^v[0-9\.]+$' | head -n 1 | cut -d'v' -f2
+}
+
 latest-openresty-archive () {
-  local VER="$(git ls-remote -t https://github.com/openresty/openresty | cut -d'/' -f 3 | sort -r | grep -P '^v[0-9\.]+$' | head -n 1 | cut -d'v' -f2)"
+  local VER="$1"; shift
   if [[ -z "$VER" ]]; then
     bash_setup RED "=== Latest OpenResty version {{not found}}."
     exit 1
@@ -10,9 +15,18 @@ latest-openresty-archive () {
   return 0
 }
 
-install-openresty () {
+current-ver () {
+  $PREFIX/nginx/sbin/nginx -v 2>&1 | cut -d'/' -f2 || :
+} # current-ver ()
+
+upgrade-openresty () {
   mksh_setup BOLD "=== Installing {{OpenResty}}"
-  export PREFIX="$(readlink -m "$PWD/progs")"
+  export DEFAULT_PREFIX="$(readlink -m "$PWD/progs")"
+  export PREFIX="${PREFIX:-$DEFAULT_PREFIX}"
+  if [[ ! -z "$@" ]]; then
+    export PREFIX="$1"; shift
+  fi
+
   export LOG_PREFIX="$(readlink -m "$PWD/tmp")"
   mkdir -p "$LOG_PREFIX"
 
@@ -20,7 +34,14 @@ install-openresty () {
 
   mksh_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
 
-  local +x LATEST="$(latest-openresty-archive)"
+  local +x CURRENT_VER=$(current-ver)
+  local +x LATEST_VER=$(latest-ver)
+  if [[ "$CURRENT_VER" == "$LATEST_VER" ]]; then
+    mksh_setup ORANGE "=== Already {{installed}}: BOLD{{$CURRENT_VER}} in {{$PREFIX}}" >&2
+    exit 0
+  fi
+
+  local +x LATEST="$(latest-openresty-archive $LATEST_VER)"
   local +x LATEST_DIR=$(basename "$LATEST" ".tar.gz")
   if [[ -z "$LATEST" ]]; then
     exit 1
@@ -37,20 +58,19 @@ install-openresty () {
     if [[ ! -s $LATEST ]]; then
       wget $PREFIX_URL/${LATEST}
     fi
-		tar -xvf ${LATEST} || { rm $LATEST; install-openresty "$PREFIX"; exit 0; }
+		tar -xvf ${LATEST} || { rm $LATEST; upgrade-openresty "$PREFIX"; exit 0; }
 	fi
 
   cd $LATEST_DIR
 
   local PROCS="$(grep -c '^processor' /proc/cpuinfo)"
 
-  ./configure                  \
-    --prefix="$PREFIX"          \
-    --with-luajit                \
-    --with-http_iconv_module      \
+  ./configure                      \
+    --prefix="$PREFIX"             \
+    --with-http_iconv_module       \
     --without-http_redis2_module   \
-    --with-pcre-jit                 \
-    --with-ipv6                      \
+    --with-pcre-jit                \
+    --with-ipv6                    \
     --error-log-path="$LOG_PREFIX/startup.error.log" \
     --http-log-path="$LOG_PREFIX/startup.access.log"  \
     -j$(($PROCS - 1))
