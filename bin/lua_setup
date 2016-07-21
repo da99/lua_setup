@@ -60,7 +60,8 @@ case $action in
     ;;
 
   *)
-    mksh_setup name-to-func "$0" "$action" "$@"
+    source "$THIS_DIR/../mksh_setup/bin/source/name-to-func/_.sh"
+    name-to-func "$action"  "$@"
     ;;
 
 esac
