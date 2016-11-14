@@ -78,7 +78,7 @@ upgrade-luarocks () {
   make build
   make install
 
-  get-version "$PREFIX"
+  mksh_setup BOLD "{{get-version "$PREFIX"}}"
 } # === end function
 
 
