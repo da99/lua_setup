@@ -1,5 +1,6 @@
 
-# === {{CMD}} ...
+# === {{CMD}}
+# === {{CMD}}  install-dir/
 upgrade-tarantool () {
   local SRC="$THIS_DIR/tmp/tarantool"
 
