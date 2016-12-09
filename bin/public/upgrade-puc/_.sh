@@ -18,7 +18,7 @@ upgrade-puc () {
   if [[ -f "$PREFIX/bin/lua" ]]; then
     local +x CURRENT="$($0 get-version "$PREFIX/bin")"
     if [[ "$NAME" == "lua-$CURRENT" ]]; then
-      mksh_setup ORANGE "=== Already {{installed}}: $CURRENT" >&2
+      sh_color ORANGE "=== Already {{installed}}: $CURRENT" >&2
       return 0
     fi
   fi

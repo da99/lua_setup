@@ -13,7 +13,7 @@ upgrade-luajit () {
     shift
   fi
 
-  mksh_setup ORANGE "=== Using prefix: {{$PREFIX}}"
+  sh_color ORANGE "=== Using prefix: {{$PREFIX}}"
   mkdir -p "$PREFIX/bin"
 
   if [[ ! -d "$SRC" ]]; then

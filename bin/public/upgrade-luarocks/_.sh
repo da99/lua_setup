@@ -31,7 +31,7 @@ upgrade-luarocks () {
   if [[ -f "$PREFIX/bin/luarocks" ]]; then
     local +x CURRENT="$(get-version "$PREFIX")"
     if [[ "$CURRENT" == "$LATEST" ]]; then
-      mksh_setup ORANGE "=== Already {{installed}}: BOLD{{$CURRENT}} in BOLD{{$PREFIX/bin/luarocks}}" >&2
+      sh_color ORANGE "=== Already {{installed}}: BOLD{{$CURRENT}} in BOLD{{$PREFIX/bin/luarocks}}" >&2
       return 0
     fi
   fi
@@ -70,7 +70,7 @@ upgrade-luarocks () {
       ;;
 
     *)
-      mksh_setup RED "!!! Lua not found for {{luarocks}} installation."
+      sh_color RED "!!! Lua not found for {{luarocks}} installation."
       exit 1
       ;;
   esac
@@ -78,7 +78,7 @@ upgrade-luarocks () {
   make build
   make install
 
-  mksh_setup BOLD "{{get-version "$PREFIX"}}"
+  sh_color BOLD "{{get-version "$PREFIX"}}"
 } # === end function
 
 

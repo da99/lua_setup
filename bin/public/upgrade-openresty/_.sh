@@ -20,7 +20,7 @@ latest-openresty-archive () {
 }
 
 upgrade-openresty () {
-  mksh_setup BOLD "=== Installing {{OpenResty}}"
+  sh_color BOLD "=== Installing {{OpenResty}}"
   export DEFAULT_PREFIX="$(readlink -m "$PWD/progs")"
   export PREFIX="${PREFIX:-$DEFAULT_PREFIX}"
   if [[ ! -z "$@" ]]; then
@@ -32,7 +32,7 @@ upgrade-openresty () {
 
   local +x PREFIX_URL="https://openresty.org/download"
 
-  mksh_setup BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
+  sh_color BOLD "=== Using PREFIX for OpenResty: {{$PREFIX}}"
 
   local +x CURRENT_VER=$(current-ver)
   local +x LATEST_VER=$(latest-ver)
@@ -41,13 +41,13 @@ upgrade-openresty () {
   fi
 
   if [[ "$CURRENT_VER" == "$LATEST_VER" ]]; then
-    mksh_setup ORANGE "=== Already {{installed}}: BOLD{{$CURRENT_VER}} in {{$PREFIX}}" >&2
+    sh_color ORANGE "=== Already {{installed}}: BOLD{{$CURRENT_VER}} in {{$PREFIX}}" >&2
     exit 0
   fi
 
   local +x LATEST_ARCHIVE="openresty-${LATEST_VER}.tar.gz"
   local +x LATEST_DIR=$(basename "$LATEST_ARCHIVE" ".tar.gz")
-  mksh_setup BOLD "=== Downloading {{$LATEST_ARCHIVE}}... "
+  sh_color BOLD "=== Downloading {{$LATEST_ARCHIVE}}... "
 
   local +x TMP="$THIS_DIR/tmp"
   mkdir -p "$TMP"

@@ -20,7 +20,7 @@ install () {
     for NAME in $@ ; do
       local +x FILE="$THIS_DIR/bin/public/upgrade-$NAME/_.sh"
       if [[ ! -f "$FILE" ]]; then
-        mksh_setup RED "!!! Invalid name: {{$NAME}}"
+        sh_color RED "!!! Invalid name: {{$NAME}}"
         exit 0
       fi
       source $FILE
