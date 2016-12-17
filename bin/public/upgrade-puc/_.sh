@@ -44,7 +44,7 @@ upgrade-puc () {
 
   make install INSTALL_TOP="$PREFIX"
 
-  set -x
+  set '-x'
   $PREFIX/bin/lua -v
 } # === end function
 
