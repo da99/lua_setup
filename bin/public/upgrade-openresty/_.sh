@@ -20,6 +20,22 @@ latest-openresty-archive () {
 }
 
 upgrade-openresty () {
+  local +x ARCH="$(mksh_setup arch)"
+
+  case "$ARCH" in
+    void.x86_64.musl)
+      echo "=== Installing packages for NGINX compilation:"
+      mksh_setup ignore-exit 6 sudo xbps-install -S \
+        make gcc musl-devel \
+        pcre-devel libressl-devel zlib-devel ncurses-devel readline-devel \
+        curl perl
+      ;;
+    *)
+      echo "!!! Unsupported architecture: $ARCH" >&2
+      exit 1
+      ;;
+  esac
+
   sh_color BOLD "=== Installing {{OpenResty}}"
   export DEFAULT_PREFIX="$(readlink -m "$PWD/progs")"
   export PREFIX="${PREFIX:-$DEFAULT_PREFIX}"
@@ -65,12 +81,14 @@ upgrade-openresty () {
 
   local +x PROCS="$(grep -c '^processor' /proc/cpuinfo)"
 
+
   ./configure                      \
     --prefix="$PREFIX"             \
     --with-http_iconv_module       \
     --without-http_redis2_module   \
     --with-pcre-jit                \
     --with-ipv6                    \
+    --with-http_ssl_module         \
     --error-log-path="$LOG_PREFIX/startup.error.log" \
     --http-log-path="$LOG_PREFIX/startup.access.log"  \
     -j$(($PROCS - 1))
