@@ -1,22 +1,17 @@
 
 
-# === {{CMD}}  # defaults to: {{CMD}}  openresty  luarocks
-# === {{CMD}}  PREFIX
-# === {{CMD}}  PREFIX  puc openresty  luajit   tarantool  luarocks
-# === {{CMD}}          puc openresty  luajit   tarantool  luarocks
-# === The PREFIX is set to `$PWD/progs` unless already set.
+# === {{CMD}}  # defaults to: {{CMD}}  luarocks
+# === {{CMD}}  puc luajit   tarantool  luarocks
+# === The PREFIX is set to `./progs`
 install () {
   # NOTE: I export PREFIX and LUA_DIR just in case
   # luajit uses them in place of the "--prefix" option
-  local +x DEFAULT_PREFIX="$(readlink -m "$PWD/progs")"
+  local +x DEFAULT_PREFIX="./progs"
 
   export PREFIX="${PREFIX:-$DEFAULT_PREFIX}"
-  if [[ ! -z "$@" &&  -d "$1" ]]; then
-    export PREFIX="$1"; shift
-  fi
 
   if [[ -z "$@" ]]; then
-    $0 install openresty  luarocks
+    $0 install luarocks
   else
     for NAME in $@ ; do
       local +x FILE="$THIS_DIR/bin/public/upgrade-$NAME/_.sh"

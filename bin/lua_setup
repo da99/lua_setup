@@ -2,7 +2,10 @@
 #
 #
 THE_ARGS="$@"
-THIS_DIR="$(bash_setup dirname_of_bin "$0")"
+THIS_DIR="$(dirname "$(dirname "$(realpath -m "$0")")")"
+
+export PATH="$PATH:$THIS_DIR/../mksh_setup/bin"
+export PATH="$PATH:$THIS_DIR/../sh_color/bin"
 
 if [[ -z "$@" ]]; then
   action="watch"
