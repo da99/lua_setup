@@ -10,21 +10,25 @@ get-version () {
 }
 
 # === {{CMD}}              # === install to $PWD/progs
-# === {{CMD}}  path/to/dir # === install to $PWD/progs
+# === PREFIX is $PWD/progs/luarocks
 upgrade-luarocks () {
   # NOTE: I export PREFIX and LUA_DIR just in case luarocks uses
   # them in place of the "--prefix" option
-  if [[ -z "$@" ]]; then
-    export PREFIX="$(readlink -m "$PWD/progs")"
+  export PREFIX="$(readlink -m "$PWD/progs/luarocks")"
+  export SYS_CONFIG_DIR="$PREFIX"
+
+  cd "$THIS_DIR"
+  mkdir -p "tmp"; cd tmp
+
+  if [[ -d luarocks ]]; then
+    cd luarocks
+    git checkout master
+    git pull
   else
-    export PREFIX="$(readlink -m "$1")"; shift
+    git clone https://github.com/keplerproject/luarocks.git
+    cd luarocks
   fi
 
-  export SYS_CONFIG_DIR="$PREFIX"
-  export LUA_DIR="$PREFIX"
-
-  git_setup clone-or-pull https://github.com/keplerproject/luarocks.git
-  cd /progs/luarocks
   git_setup checkout-latest
 
   local +x LATEST="$(latest)"
@@ -36,27 +40,27 @@ upgrade-luarocks () {
     fi
   fi
 
-  local +x BIN="$(find $PREFIX  -regextype posix-extended -regex ".+/bin/(lua|luajit|tarantool)$")"
+  local +x BIN="$(find -L "$(realpath -m "$PREFIX/..")" -type f -regextype posix-extended -regex ".+/bin/(lua|luajit|tarantool)$")"
   local +x LUA_DIR="$(dirname "$(dirname "$BIN")")"
 
   case "$BIN" in
+    */luajit) # luajit goes first since it symlinks to lua bin.
+        local +x NAME="$($BIN -v | grep -Po '^LuaJIT \K(\d+\.\d+)(?=\.\d)')"
+        ./configure               \
+          --prefix="$PREFIX"         \
+          --with-lua="$LUA_DIR"        \
+          --lua-suffix="jit"           \
+          --with-lua-include="$(find "$(realpath -m "$LUA_DIR/..")" -type d -path "*/include/luajit-*")" \
+          --sysconfdir="$SYS_CONFIG_DIR"         \
+          --force-config
+      ;;
+
     */lua)
         ./configure               \
         --prefix="$PREFIX"         \
         --with-lua="$LUA_DIR"        \
         --sysconfdir="$SYS_CONFIG_DIR"         \
         --force-config
-      ;;
-
-    */luajit)
-        local +x NAME="$($BIN -v | grep -Po '^LuaJIT \K(\d+\.\d+)(?=\.\d)')"
-        ./configure               \
-          --prefix="$PREFIX"         \
-          --with-lua="$LUA_DIR"        \
-          --lua-suffix="jit"           \
-          --with-lua-include="$(find "$LUA_DIR" -type d -path "*/include/luajit-*")" \
-          --sysconfdir="$SYS_CONFIG_DIR"         \
-          --force-config
       ;;
 
     */tarantool)
@@ -78,7 +82,7 @@ upgrade-luarocks () {
   make build
   make install
 
-  sh_color BOLD "{{get-version "$PREFIX"}}"
+  sh_color BOLD "=== Installed: {{$(get-version "$PREFIX")}}"
 } # === end function
 
 

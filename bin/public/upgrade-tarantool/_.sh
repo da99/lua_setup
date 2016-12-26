@@ -7,7 +7,7 @@ upgrade-tarantool () {
   export PREFIX
 
   if [[ -z "$@" ]]; then
-    PREFIX="$(realpath -m progs/)"
+    PREFIX="$(realpath -m progs/tarantool)"
   else
     PREFIX="$1"; shift
   fi

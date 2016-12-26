@@ -1,20 +1,20 @@
 
 # === {{CMD}}
-# === {{CMD}}  install-dir/
+# === PREFIX is set to ./progs/luajit
 upgrade-luajit () {
-  local SRC="$THIS_DIR/tmp/luajit"
+
+  local +x ORIGIN="$PWD"
+  local +x SRC="luajit"
 
   export PREFIX
 
-  if [[ -z "$@" ]]; then
-    PREFIX="$(realpath -m progs/)"
-  else
-    PREFIX="$1"
-    shift
-  fi
+  PREFIX="./progs/luajit"
 
   sh_color ORANGE "=== Using prefix: {{$PREFIX}}"
-  mkdir -p "$PREFIX/bin"
+  mkdir -p "$PREFIX"
+
+  mkdir -p "$THIS_DIR/tmp"
+  cd "$THIS_DIR/tmp"
 
   if [[ ! -d "$SRC" ]]; then
     git clone http://luajit.org/git/luajit-2.0.git "$SRC"
@@ -25,9 +25,9 @@ upgrade-luajit () {
   fi
 
   make clean
-  make         PREFIX="$PREFIX"
-  make install PREFIX="$PREFIX"
+  make         PREFIX="$ORIGIN/$PREFIX"
+  make install PREFIX="$ORIGIN/$PREFIX"
 
-  $PREFIX/bin/luajit -v
+  "$ORIGIN/$PREFIX"/bin/luajit -v
 } # === end function
 

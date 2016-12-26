@@ -5,7 +5,7 @@ upgrade-puc () {
   export PREFIX
 
   if [[ -z "$@" ]]; then
-    PREFIX="$(realpath -m progs)"
+    PREFIX="$(realpath -m progs/lua)"
   else
     PREFIX="$(realpath -m "$1")"; shift
   fi
