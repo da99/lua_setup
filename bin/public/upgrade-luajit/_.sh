@@ -1,6 +1,6 @@
 
 # === {{CMD}}
-# === PREFIX is set to ./progs/luajit
+# === PREFIX is set to $PWD/progs/luajit
 upgrade-luajit () {
 
   local +x ORIGIN="$PWD"
@@ -8,7 +8,7 @@ upgrade-luajit () {
 
   export PREFIX
 
-  PREFIX="./progs/luajit"
+  PREFIX="$ORIGIN/progs/luajit"
 
   sh_color ORANGE "=== Using prefix: {{$PREFIX}}"
   mkdir -p "$PREFIX"
@@ -25,9 +25,9 @@ upgrade-luajit () {
   fi
 
   make clean
-  make         PREFIX="$ORIGIN/$PREFIX"
-  make install PREFIX="$ORIGIN/$PREFIX"
+  make         PREFIX="$PREFIX"
+  make install PREFIX="$PREFIX"
 
-  "$ORIGIN/$PREFIX"/bin/luajit -v
+  "$PREFIX"/bin/luajit -v
 } # === end function
 
