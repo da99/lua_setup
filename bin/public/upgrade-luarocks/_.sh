@@ -1,5 +1,6 @@
 
 
+source "$THIS_DIR/bin/public/lua-bin/_.sh"
 latest () {
   cd /progs/luarocks
   git tag | grep -P '^v\d+\.\d+\.\d+$' | tail -n 1 | cut -d'v' -f2
@@ -12,6 +13,8 @@ get-version () {
 # === {{CMD}}              # === install to $PWD/progs
 # === PREFIX is $PWD/progs/luarocks
 upgrade-luarocks () {
+  local +x ORIGIN="$PWD"
+
   # NOTE: I export PREFIX and LUA_DIR just in case luarocks uses
   # them in place of the "--prefix" option
   export PREFIX="$(readlink -m "$PWD/progs/luarocks")"
@@ -40,7 +43,7 @@ upgrade-luarocks () {
     fi
   fi
 
-  local +x BIN="$(find -L "$(realpath -m "$PREFIX/..")" -type f -regextype posix-extended -regex ".+/bin/(lua|luajit|tarantool)$")"
+  local +x BIN="$ORIGIN/$(cd "$ORIGIN" && lua-bin)"
   local +x LUA_DIR="$(dirname "$(dirname "$BIN")")"
 
   case "$BIN" in
