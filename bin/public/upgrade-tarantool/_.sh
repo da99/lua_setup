@@ -22,9 +22,9 @@ upgrade-tarantool () {
     git submodule update --recursive
   else
     cd "$SRC"
-    local TAG="$(git_setup describe)"
+    local TAG="$(my_git describe)"
     git pull
-    local NEW_TAG="$(git_setup describe)"
+    local NEW_TAG="$(my_git describe)"
   fi
 
   compile_tarantool "$PREFIX"

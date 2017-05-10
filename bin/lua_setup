@@ -6,7 +6,7 @@ THIS_DIR="$(dirname "$(dirname "$(realpath -m "$0")")")"
 
 export PATH="$PATH:$THIS_DIR/../mksh_setup/bin"
 export PATH="$PATH:$THIS_DIR/../sh_color/bin"
-export PATH="$PATH:$THIS_DIR/../git_setup/bin"
+export PATH="$PATH:$THIS_DIR/../my_git/bin"
 
 if [[ -z "$@" ]]; then
   action="watch"

@@ -32,7 +32,7 @@ upgrade-luarocks () {
     cd luarocks
   fi
 
-  git_setup checkout-latest
+  my_git checkout-latest
 
   local +x LATEST="$(latest)"
   if [[ -f "$PREFIX/bin/luarocks" ]]; then
